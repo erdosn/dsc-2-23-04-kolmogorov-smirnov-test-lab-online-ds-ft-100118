@@ -39,10 +39,13 @@ x_1000 = stats.norm.rvs(loc=0, scale=3, size=1000)
 
 
 ```python
-# Plot histograms and QQplots for above datasets
-
-# You code here
-
+labels = ['x_10', 'x_50', 'x_100', 'x_1000']
+for index, rvs in enumerate([x_10, x_50, x_100, x_1000]):
+    print(labels[index])
+    plt.hist(rvs)
+    plt.show()
+    sm.qqplot(rvs, line='s')
+    plt.show()
 ```
 
     x_10
@@ -103,12 +106,17 @@ x_1000 = stats.norm.rvs(loc=0, scale=3, size=1000)
 # You code here 
 
 def ks_plot(data):
+    plt.figure(figsize=(10, 7))
+    plt.plot(np.sort(data), np.linspace(0, 1, len(data), endpoint=False))
+    plt.plot(np.sort(stats.norm.rvs(loc=0, scale=3, size=len(data))), np.linspace(0, 1, len(data), endpoint=False))
 
+    plt.legend(['ECDF', 'CDF'])
+    plt.title('Comparing CDFs for KS-Test, Sample size={}\n mu={} sigma={}'.format(str(len(data)), round(data.mean(), 0), round(data.std(), 0)))
     pass
     
 # Uncomment below to run the test
-# ks_plot(stats.norm.rvs(loc=0, scale=3, size=100)) 
-# ks_plot(stats.norm.rvs(loc=5, scale=4, size=100))
+ks_plot(stats.norm.rvs(loc=0, scale=3, size=100)) 
+ks_plot(stats.norm.rvs(loc=5, scale=4, size=100))
 
 
 ```
@@ -128,6 +136,10 @@ This is awesome. The difference between two cdfs in the second plot show that sa
 
 ```python
 # Your code here 
+ks_plot(x_10)
+ks_plot(x_50)
+ks_plot(x_100)
+ks_plot(x_1000)
 ```
 
 
@@ -182,10 +194,10 @@ for i in [x_10,x_50,x_100,x_1000]:
 # KstestResult(statistic=0.026211483799585156, pvalue=0.4974218016349998)
 ```
 
-    KstestResult(statistic=0.1632179747086434, pvalue=0.9526730195059537)
-    KstestResult(statistic=0.1072471715631031, pvalue=0.590698827561229)
-    KstestResult(statistic=0.08957748590021086, pvalue=0.3787922342822605)
-    KstestResult(statistic=0.02825842101747439, pvalue=0.39744474314954137)
+    KstestResult(statistic=0.18267382109223318, pvalue=0.8924034061439213)
+    KstestResult(statistic=0.07475647474319069, pvalue=0.9426549991322276)
+    KstestResult(statistic=0.10974461370099925, pvalue=0.1669463081272482)
+    KstestResult(statistic=0.027814295742008666, pvalue=0.41786781080944246)
 
 
 
@@ -201,14 +213,15 @@ for i in [x_10,x_50,x_100,x_1000]:
 ```python
 # Try with a uniform distubtion
 x_uni = np.random.rand(1000)
-
+print(stats.kstest(x_uni, lambda x: x))
+print(stats.kstest(x_uni, 'norm', args=(0, 3)))
 
 # KstestResult(statistic=0.025244449633212818, pvalue=0.5469114859681035)
 # KstestResult(statistic=0.5001459915784039, pvalue=0.0)
 ```
 
-    KstestResult(statistic=0.025244449633212818, pvalue=0.5469114859681035)
-    KstestResult(statistic=0.5001459915784039, pvalue=0.0)
+    KstestResult(statistic=0.0379470844425005, pvalue=0.1094372906022647)
+    KstestResult(statistic=0.5000565717084765, pvalue=0.0)
 
 
 
@@ -230,7 +243,7 @@ Let's generate some bi-modal data first for this test
 # Generate binomial data
 N = 1000
 x_1000_bi = np.concatenate((np.random.normal(-1, 1, int(0.1 * N)), np.random.normal(5, 1, int(0.4 * N))))[:, np.newaxis]
-plt.hist(x_1000_bi);
+plt.hist(x_1000_bi)x
 ```
 
 
@@ -247,10 +260,15 @@ def ks_plot_2sample(data_1, data_2):
     '''
     Data entereted must be the same size.
     '''
-    pass
-
-# Uncomment below to run
-# ks_plot_comp(x_100, x_bimodal_100[:,0])
+    length = len(data_1)
+    plt.figure(figsize=(12, 7))
+    plt.plot(np.sort(data_1), np.linspace(0, 1, len(data_1), endpoint=False))
+    plt.plot(np.sort(data_2), np.linspace(0, 1, len(data_2), endpoint=False))
+    plt.legend('top right')
+    plt.legend(['Data_1', 'Data_2'])
+    plt.title('Comparing 2 CDFs for KS-Test')
+    
+ks_plot_2sample(x_100, x_1000_bi[:,0])
 ```
 
 
@@ -268,9 +286,16 @@ def ks_plot_2sample(data_1, data_2):
 
 ```python
 # You rcode here
-
+stats.ks_2samp(x_1000, x_1000_bi[:,0])
 # Ks_2sampResult(statistic=0.575, pvalue=1.2073337530608254e-14)
 ```
+
+
+
+
+    Ks_2sampResult(statistic=0.64, pvalue=1.1663769849134798e-120)
+
+
 
 
 ```python
